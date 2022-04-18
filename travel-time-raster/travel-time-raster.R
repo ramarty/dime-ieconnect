@@ -38,13 +38,17 @@ rasterize_roads <- function(road_sdf,
   road_sdf <- road_sdf[order(road_sdf$speed_var_temp, decreasing=F),] 
   
   #### Prep extent object
-  if(is.null(extent_sdf)) extent_sdf <- road_sdf %>% extent()
+  if(is.null(extent_sdf)) extent_sdf <- road_sdf
   
   #### Make blank raster
   r <- raster(xmn=extent_sdf@bbox[1,1], 
               xmx=extent_sdf@bbox[1,2], 
               ymn=extent_sdf@bbox[2,1], 
               ymx=extent_sdf@bbox[2,2], 
+              crs=crs(road_sdf), 
+              resolution = pixel_size_km*1000)
+  
+  r <- raster(ext = extent_sdf %>% extent(), 
               crs=crs(road_sdf), 
               resolution = pixel_size_km*1000)
   
@@ -70,9 +74,9 @@ rasterize_roads <- function(road_sdf,
   return(roads_r)
 }
 
-make_travel_time_matrix <- function(points_sdf,
-                                    uid_name,
-                                    cost_t){
+make_tt_matrix <- function(points_sdf,
+                           uid_name,
+                           cost_t){
   
   # DESCRIPTION: Calculates the travel time for every point in `points_sdf` to
   # all other points in `points_sdf`. Returns a matrix with the following variables
@@ -105,12 +109,12 @@ make_travel_time_matrix <- function(points_sdf,
   return(tt_df)
 }
 
-make_tt_matrix <- function(tt_df,
-                           orig_uid_var,
-                           market_var,
-                           travel_cost_var,
-                           theta,
-                           exclude_km){
+calc_ma <- function(tt_df,
+                    orig_uid_var,
+                    market_var,
+                    travel_cost_var,
+                    theta,
+                    exclude_km){
   # DESCRIPTION: Using a travel cost matrix that includes market size (eg, population),
   # computes market access.
   # ARGS:
