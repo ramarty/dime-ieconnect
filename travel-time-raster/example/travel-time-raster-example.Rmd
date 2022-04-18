@@ -154,11 +154,12 @@ od_paths_sp$d_name <- ds_sp$d_name
 ```
 
 ```{r, message=FALSE, warning=FALSE}
-print(od_paths_sp)
+print(od_paths_sp@data)
 ```
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 plot(roads_r)
+plot(o_sp, add = T, color = "red")
 plot(od_paths_sp, add = T)
 ```
 

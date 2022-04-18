@@ -205,17 +205,13 @@ od_paths_sp$d_name <- ds_sp$d_name
 ```
 
 ``` r
-print(od_paths_sp)
+print(od_paths_sp@data)
 ```
 
-    ## class       : SpatialLinesDataFrame 
-    ## features    : 3 
-    ## extent      : 210414.2, 216014.2, 323290.8, 333190.8  (xmin, xmax, ymin, ymax)
-    ## crs         : +proj=lcc +lat_0=36 +lon_0=-79.5 +lat_1=37 +lat_2=39.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs 
-    ## variables   : 2
-    ## names       :    travel_time_hr,     o_name 
-    ## min values  : 0.131666666666668, world bank 
-    ## max values  : 0.300000000000004, world bank
+    ##   travel_time_hr     o_name
+    ## 1      0.1583333 world bank
+    ## 2      0.1316667 world bank
+    ## 3      0.3000000 world bank
 
 ``` r
 plot(roads_r)
