@@ -4,6 +4,8 @@ Compute Travel Time: Raster-Based Approach
 -   [Prep Points and and Roads Data](#prep-points-and-and-roads-data)
     -   [Set up](#set-up)
     -   [Create example points](#create-example-points)
+    -   [Grab and clean road data from
+        OSM](#grab-and-clean-road-data-from-osm)
 -   [Calculate travel time, shortest path and market
     access](#calculate-travel-time-shortest-path-and-market-access)
     -   [Rasterize roads and make transition
@@ -115,9 +117,12 @@ leaflet() %>%
 ```
 
 ![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-\## Grab and clean road data from OSM Here, we grab road network data
-from OpenStreetMaps for Washington, DC. The code for calculating travel
-times assumes the spatial data is projected.
+
+## Grab and clean road data from OSM
+
+Here, we grab road network data from OpenStreetMaps for Washington, DC.
+The code for calculating travel times assumes the spatial data is
+projected.
 
 ``` r
 #### Import OSM road data
@@ -136,6 +141,12 @@ roads_sp$speed_kmhr[roads_sp$highway %in% "trunk"]   <- 60
 ## Project
 roads_sp <- spTransform(roads_sp, UTM_PROJ)
 ```
+
+``` r
+plot(roads_sp)
+```
+
+![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 # Calculate travel time, shortest path and market access
 
@@ -164,7 +175,7 @@ cost_t <- transition(roads_r, function(x) 1/mean(x), directions=8)
 plot(roads_r)
 ```
 
-![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ## Travel times & shortest paths from one location to all others
 
@@ -178,14 +189,15 @@ ds_sp <- locs_sp[locs_sp$name != "world bank",]
 
 ## Create polylines of shortest paths
 od_paths_sp <- shortestPath(cost_t, 
-                         o_sp, 
-                         ds_sp, 
-                         output="SpatialLines")
+                            o_sp, 
+                            ds_sp, 
+                            output="SpatialLines")
 
 ## Add Travel time
 od_paths_sp$travel_time_hr <- costDistance(cost_t,
-                                        o_sp,
-                                        ds_sp) %>% as.numeric()
+                                           o_sp,
+                                           ds_sp) %>% 
+  as.numeric()
 
 ## Add o-d names to dataframe
 od_paths_sp$o_name <- "world bank"
@@ -193,15 +205,24 @@ od_paths_sp$d_name <- ds_sp$d_name
 ```
 
 ``` r
-head(od_paths_sp)
+print(od_paths_sp)
 ```
+
+    ## class       : SpatialLinesDataFrame 
+    ## features    : 3 
+    ## extent      : 210414.2, 216014.2, 323290.8, 333190.8  (xmin, xmax, ymin, ymax)
+    ## crs         : +proj=lcc +lat_0=36 +lon_0=-79.5 +lat_1=37 +lat_2=39.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs 
+    ## variables   : 2
+    ## names       :    travel_time_hr,     o_name 
+    ## min values  : 0.131666666666668, world bank 
+    ## max values  : 0.300000000000004, world bank
 
 ``` r
 plot(roads_r)
 plot(od_paths_sp, add = T)
 ```
 
-![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## Travel time matrix
 
@@ -217,6 +238,24 @@ tt_df <- make_tt_matrix(points_sdf = locs_sp,
 ``` r
 print(tt_df)
 ```
+
+    ##    dest_id travel_time distance_meters orig_id
+    ## 1        1   0.0000000           0.000       1
+    ## 2        2   0.2500000        7006.834       1
+    ## 3        3   0.1583333        4285.919       1
+    ## 4        4   0.4016667        6782.076       1
+    ## 5        1   0.2500000        7006.834       2
+    ## 6        2   0.0000000           0.000       2
+    ## 7        3   0.1316667        3063.789       2
+    ## 8        4   0.3416667        9548.588       2
+    ## 9        1   0.1583333        4285.919       3
+    ## 10       2   0.1316667        3063.789       3
+    ## 11       3   0.0000000           0.000       3
+    ## 12       4   0.3000000        8766.580       3
+    ## 13       1   0.4016667        6782.076       4
+    ## 14       2   0.3416667        9548.588       4
+    ## 15       3   0.3000000        8766.580       4
+    ## 16       4   0.0000000           0.000       4
 
 ## Market access
 
@@ -250,3 +289,11 @@ ma_df <- calc_ma(tt_df = tt_data_df,
 ``` r
 print(ma_df)
 ```
+
+    ## # A tibble: 4 × 2
+    ##   orig_uid MA_tt_population_theta3
+    ##      <int>                   <dbl>
+    ## 1        1                1448754.
+    ## 2        2                2047262.
+    ## 3        3                6717580.
+    ## 4        4                 482089.

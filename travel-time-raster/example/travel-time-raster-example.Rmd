@@ -82,6 +82,7 @@ leaflet() %>%
              weight = 15,
              opacity = 1)
 ```
+
 ## Grab and clean road data from OSM
 Here, we grab road network data from OpenStreetMaps for Washington, DC. The code for calculating travel times assumes the spatial data is projected.
 ```{r, results='hide', message=FALSE, warning=FALSE}
@@ -100,6 +101,10 @@ roads_sp$speed_kmhr[roads_sp$highway %in% "trunk"]   <- 60
 
 ## Project
 roads_sp <- spTransform(roads_sp, UTM_PROJ)
+```
+
+```{r, message=FALSE, warning=FALSE}
+plot(roads_sp)
 ```
 
 # Calculate travel time, shortest path and market access
@@ -133,22 +138,23 @@ ds_sp <- locs_sp[locs_sp$name != "world bank",]
 
 ## Create polylines of shortest paths
 od_paths_sp <- shortestPath(cost_t, 
-                         o_sp, 
-                         ds_sp, 
-                         output="SpatialLines")
+                            o_sp, 
+                            ds_sp, 
+                            output="SpatialLines")
 
 ## Add Travel time
 od_paths_sp$travel_time_hr <- costDistance(cost_t,
-                                        o_sp,
-                                        ds_sp) %>% as.numeric()
+                                           o_sp,
+                                           ds_sp) %>% 
+  as.numeric()
 
 ## Add o-d names to dataframe
 od_paths_sp$o_name <- "world bank"
 od_paths_sp$d_name <- ds_sp$d_name
 ```
 
-```{r, results='hide', message=FALSE, warning=FALSE}
-head(od_paths_sp)
+```{r, message=FALSE, warning=FALSE}
+print(od_paths_sp)
 ```
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
@@ -164,7 +170,7 @@ tt_df <- make_tt_matrix(points_sdf = locs_sp,
                         cost_t     = cost_t)
 ```
 
-```{r, results='hide', message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 print(tt_df)
 ```
 
@@ -188,7 +194,7 @@ ma_df <- calc_ma(tt_df = tt_data_df,
                  exclude_km = 0)
 ```
 
-```{r, results='hide', message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 print(ma_df)
 ```
 
