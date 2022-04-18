@@ -7,4 +7,5 @@ Compute travel time and market access relying on a roads network polyline. This 
 
 For additional details, see [here](https://github.com/ramarty/dime-ieconnect/tree/main/travel-time-raster).
 
-<a id="raw-url" href="https://raw.githubusercontent.com/ramarty/dime-ieconnect/main/travel-time-raster/example/travel-time-raster-example.Rmd">Download FILE</a>
+
+<a href="https://raw.githubusercontent.com/ramarty/dime-ieconnect/main/travel-time-raster/example/travel-time-raster-example.Rmd" download>Click to Download</a>
