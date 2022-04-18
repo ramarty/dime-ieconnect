@@ -1,5 +1,13 @@
 # Functions to faciliate estimating travel times
 
+library(dplyr)
+library(sp)
+library(raster)
+library(gdistance)
+library(velox)
+library(rgeos)
+library(stringr)
+
 rasterize_roads <- function(road_sdf, 
                             speed_var, 
                             extent_sdf = NULL,
@@ -11,7 +19,7 @@ rasterize_roads <- function(road_sdf,
   # within the raster, assigns the fastest speed. 
   # ARGS:
   #   road_sdf: Spatial dataframe of roads
-  #   speed_var: name of variable in spatial dataframe that corresponds to speeds (character)
+  #   speed_var: (character) name of variable in spatial dataframe that corresponds to speeds 
   #   extent: Spatial object where extent should be derived for creating raster. The function
   #           will create a raster using this bounding box. If NULL, uses extent of road_sdf
   #   walking_speed: Walking speed (speed assigned to areas not roads). 
