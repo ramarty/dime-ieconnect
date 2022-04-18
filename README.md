@@ -6,6 +6,3 @@ Functions useful across DIME/ieConnect projects
 Compute travel time and market access relying on a roads network polyline. This approach rasterizes the road network into a gridded surface and allows easily computing travel time and shortest paths along the surface. With travel times, we can also compute market access.
 
 For additional details, see [here](https://github.com/ramarty/dime-ieconnect/tree/main/travel-time-raster).
-
-
-<a href="https://raw.githubusercontent.com/ramarty/dime-ieconnect/main/travel-time-raster/example/travel-time-raster-example.Rmd" download>Click to Download</a>
