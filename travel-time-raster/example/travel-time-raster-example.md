@@ -76,6 +76,7 @@ UTM_PROJ <- "+init=epsg:3968"
 ## Create example points
 
 Create example points to calculate travel time between.
+#CB: Tip: When computing travel time between polygons, compute their centroids
 
 ``` r
 locs_sp <- bind_rows(
@@ -124,6 +125,8 @@ Here, we grab road network data from OpenStreetMaps for Washington, DC.
 The code for calculating travel times assumes the spatial data is
 projected.
 
+#CB: To compute travel time, we use road quality as a proxy for travel speeds and assign speeds defined by GOSTNets (insert link)
+
 ``` r
 #### Import OSM road data
 q <- opq(bbox = 'washington dc') %>%
@@ -151,13 +154,12 @@ plot(roads_sp)
 # Calculate travel time, shortest path and market access
 
 The below code illustrates using the road network data to calculate
-travel time between different locations. We: 1. Rasterize roads and make
-a transition object. The transition object allows us to pick any two
-points on the surface and easily get the travel time and shortest path
-2. Compute travel time and shortest paths from one location to all
-locations 3. Create a travel time matrix that includes the travel time
-between all locations 4. Compute a measure of market access for each
-location
+travel time between different locations. We: 
+1. Rasterize roads and make a transition object. The transition object allows us to pick any two points on the surface 
+and easily get the travel time and shortest path
+2. Compute travel time and shortest paths from one location to all locations 
+3. Create a travel time matrix that includes the travel time between all locations 
+4. Compute a measure of market access for each location
 
 ## Rasterize roads and make transition object
 
@@ -165,14 +167,20 @@ location
 #### Rasterize roads
 roads_r <- rasterize_roads(road_sdf = roads_sp,
                            speed_var = "speed_kmhr",
-                           pixel_size_km = 0.1)
+                           pixel_size_km = 0.1) 
+                           #CB: It would be helpful to describe the "pixel_size_km" parameter and some common mistakes. e.g., increasing pixel size
+                     
 
 #### Make transition object
-cost_t <- transition(roads_r, function(x) 1/mean(x), directions=8)
+cost_t <- transition(roads_r, function(x) 1/mean(x), directions=8)  
+#CB: Helpful to annotate this code. For example, why we use "1/mean(x)" and "directions = 8"
+
 ```
 
 ``` r
 plot(roads_r)
+
+#CB: For more clarity, you could describe what the plot depicts
 ```
 
 ![](travel-time-raster-example_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -267,6 +275,8 @@ destination):
 
 ![MA\_{o} = \\sum\_{d,\~d \\neq o} pop_d \\times tt\_{o,d}^{-\\theta}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;MA_%7Bo%7D%20%3D%20%5Csum_%7Bd%2C~d%20%5Cneq%20o%7D%20pop_d%20%5Ctimes%20tt_%7Bo%2Cd%7D%5E%7B-%5Ctheta%7D "MA_{o} = \sum_{d,~d \neq o} pop_d \times tt_{o,d}^{-\theta}")
 
+
+#CB: Adding a link to a market access paper for further explanation of the concept is a helpful resource to share
 ``` r
 set.seed(42)
 locs_sp$population <- runif(nrow(locs_sp))*10000
@@ -279,7 +289,8 @@ ma_df <- calc_ma(tt_df = tt_data_df,
                  market_var = "population",
                  travel_cost_var = "travel_time",
                  theta = 3,
-                 exclude_km = 0)
+                 exclude_km = 0) 
+                 #CB: Could add a line about parameters "theta" and "exclude_km" and how it impacts the market access measure
 ```
 
 ``` r
